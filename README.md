@@ -14,5 +14,3 @@ Welcome to my coding war zone! This repository tracks my daily progress as I con
 
 ---
 
-## 📁 Folder Structure
-
