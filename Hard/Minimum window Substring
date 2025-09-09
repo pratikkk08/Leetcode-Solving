@@ -1,0 +1,163 @@
+Given two strings s and t of lengths m and n respectively, return the minimum window substring of s such that every character in t (including duplicates) is included in the window. If there is no such substring, return the empty string "".
+
+The testcases will be generated such that the answer is unique.
+
+ 
+
+Example 1:
+
+Input: s = "ADOBECODEBANC", t = "ABC"
+Output: "BANC"
+Explanation: The minimum window substring "BANC" includes 'A', 'B', and 'C' from string t.
+Example 2:
+
+Input: s = "a", t = "a"
+Output: "a"
+Explanation: The entire string s is the minimum window.
+Example 3:
+
+Input: s = "a", t = "aa"
+Output: ""
+Explanation: Both 'a's from t must be included in the window.
+Since the largest window of s only has one 'a', return empty string.
+ 
+
+Constraints:
+
+m == s.length
+n == t.length
+1 <= m, n <= 105
+s and t consist of uppercase and lowercase English letters.
+ 
+
+Follow up: Could you find an algorithm that runs in O(m + n) time? 
+
+
+//CODE
+
+
+package day10;
+
+public class Minimum_Window_Substring {
+
+    /*
+     * minWindow(s, t)
+     * Finds the smallest substring in s that contains all characters of t (including duplicates).
+     *
+     * Approach: sliding window with two arrays:
+     * - required[c] = how many of char c we need (from t)
+     * - window[c]   = how many of char c we currently have in the window
+     *
+     * We maintain:
+     * - requiredUnique: number of distinct chars in t we need to satisfy
+     * - formed: how many of those distinct chars currently meet their required count in window
+     *
+     * Expand `right` to include chars until formed == requiredUnique (window valid).
+     * Then contract `left` as much as possible while keeping window valid to find minimum.
+     *
+     * Time: O(|s| + |t|) — each char enters and leaves window at most once.
+     * Space: O(1) if using fixed alphabet (here 128 ASCII), or O(k) for alphabet size.
+     */
+    public static String minWindow(String s, String t) {
+        // edge-cases: nulls or t longer than s -> impossible
+        if (s == null || t == null || s.length() < t.length()) return "";
+
+        // required[c] stores frequency needed for character c (ASCII indexed)
+        int[] required = new int[128];
+
+        // requiredUnique = number of distinct characters in t that we must fulfill
+        int requiredUnique = 0;
+        for (char c : t.toCharArray()) {
+            // if this character hasn't been recorded yet, increment distinct counter
+            if (required[c] == 0) requiredUnique++;
+            // increase the required count for this character
+            required[c]++;
+        }
+
+        // window[c] stores frequency of character c currently in the sliding window
+        int[] window = new int[128];
+
+        // formed = how many distinct required characters currently meet the required frequency
+        int formed = 0;
+
+        // sliding window pointers: [left, right]
+        int left = 0, right = 0;
+
+        // minLen and minStart keep the best (smallest) window found so far
+        int minLen = Integer.MAX_VALUE;
+        int minStart = 0;
+
+        // Expand the window by moving `right` from 0 to s.length()-1
+        while (right < s.length()) {
+            char cr = s.charAt(right); // character being added to the window
+            window[cr]++;               // include it in window counts
+
+            // If this char is required and we've reached exactly its required count,
+            // it means one more distinct required char is now "satisfied".
+            if (required[cr] > 0 && window[cr] == required[cr]) {
+                formed++;
+            }
+
+            /*
+             * When all required distinct characters are satisfied (formed == requiredUnique),
+             * the current window [left..right] is valid. Now try to contract from the left
+             * to remove unnecessary chars and possibly get a smaller valid window.
+             */
+            while (left <= right && formed == requiredUnique) {
+                // current window length
+                int currLen = right - left + 1;
+
+                // update best answer if current window is smaller
+                if (currLen < minLen) {
+                    minLen = currLen;
+                    minStart = left;
+                }
+
+                // attempt to remove the leftmost char and update counts/formations
+                char cl = s.charAt(left);
+                window[cl]--; // remove char cl from the window
+
+                // If cl is a required character and by removing it we drop below the required count,
+                // then this distinct requirement becomes unsatisfied and formed should decrement.
+                if (required[cl] > 0 && window[cl] < required[cl]) {
+                    formed--;
+                }
+
+                // move left forward to continue contracting
+                left++;
+            }
+
+            // expand right to consider next character
+            right++;
+        }
+
+        // If minLen wasn't updated, no valid window found -> return empty string
+        return (minLen == Integer.MAX_VALUE) ? "" : s.substring(minStart, minStart + minLen);
+    }
+
+    public static void main(String[] args) {
+        // quick test
+        String s = "ADOBECODEBANC";
+        String t = "ABC";
+
+        // prints inputs
+        System.out.println("s = " + s);
+        System.out.println("t = " + t);
+
+        // call minWindow and print result (expected "BANC")
+        System.out.println("Minimum window substring: \"" + minWindow(s, t) + "\"");
+    }
+
+    /*
+     * Additional notes / interview pointers:
+     * - `requiredUnique` counts distinct characters in t. This avoids checking whole arrays each time.
+     * - `formed` is incremented only when window[c] reaches required[c] exactly, and decremented
+     *   only when it falls below required[c]. This preserves the invariant:
+     *       formed == number of distinct chars whose counts in window >= required counts.
+     * - Using arrays of size 128 relies on ASCII characters. For full Unicode or generic keys,
+     *   use a HashMap<Character, Integer> instead (but then space/time constants change).
+     * - Alternative compact trick: maintain a single "need" array and a `remaining` counter that
+     *   decrements when we include a char and increments when we remove it — slightly different
+     *   bookkeeping, but same idea.
+     */
+}
