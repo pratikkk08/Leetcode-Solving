@@ -1,0 +1,83 @@
+Given an array of strings strs, group the anagrams together. You can return the answer in any order.
+
+ 
+
+Example 1:
+
+Input: strs = ["eat","tea","tan","ate","nat","bat"]
+
+Output: [["bat"],["nat","tan"],["ate","eat","tea"]]
+
+Explanation:
+
+There is no string in strs that can be rearranged to form "bat".
+The strings "nat" and "tan" are anagrams as they can be rearranged to form each other.
+The strings "ate", "eat", and "tea" are anagrams as they can be rearranged to form each other.
+Example 2:
+
+Input: strs = [""]
+
+Output: [[""]]
+
+Example 3:
+
+Input: strs = ["a"]
+
+Output: [["a"]]
+
+ 
+
+Constraints:
+
+1 <= strs.length <= 104
+0 <= strs[i].length <= 100
+strs[i] consists of lowercase English letters.
+
+
+//CODE
+
+package day10;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Group_Anagrams {
+	public static List<List<String>> groupAnagrams(String[] strs) {
+        Map<String, List<String>> map = new HashMap<>();
+
+        for (String s : strs) {
+            int[] count = new int[26];
+            for (char c : s.toCharArray()) {
+                count[c - 'a']++;
+            }
+
+            // Build key
+            StringBuilder key = new StringBuilder();
+            for (int num : count) {
+                key.append(num).append('#');
+            }
+
+            // Debug print: see what key is being formed
+            System.out.println("Word: " + s + " -> Key: " + key);
+
+            map.computeIfAbsent(key.toString(), k -> new ArrayList<>()).add(s);
+        }
+
+        return new ArrayList<>(map.values());
+    }
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		 String[] words = {"listen", "silent", "enlist", "rat", "tar", "art", "god", "dog"};
+	        List<List<String>> result = groupAnagrams(words);
+
+	        System.out.println("\nGrouped Anagrams:");
+	        for (List<String> group : result) {
+	            System.out.println(group);
+	        }
+
+	}
+
+}
