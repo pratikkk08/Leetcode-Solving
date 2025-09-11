@@ -1,0 +1,81 @@
+Given the head of a singly linked list, reverse the list, and return the reversed list.
+
+ 
+
+Example 1:
+
+
+Input: head = [1,2,3,4,5]
+Output: [5,4,3,2,1]
+Example 2:
+
+
+Input: head = [1,2]
+Output: [2,1]
+Example 3:
+
+Input: head = []
+Output: []
+ 
+
+Constraints:
+
+The number of nodes in the list is the range [0, 5000].
+-5000 <= Node.val <= 5000
+ 
+
+Follow up: A linked list can be reversed either iteratively or recursively. Could you implement both?
+
+//CODE
+
+package day12;
+
+
+class ListNode{
+	int val;
+	ListNode next;
+	ListNode(int val){
+		this.val= val;
+		this.next = null;
+	}
+}
+public class Reverse_Linked_List {
+	public ListNode reverseList(ListNode head) {
+		ListNode prev =null;
+		ListNode curr = head;
+		while(curr!=null) {
+			ListNode next = curr.next;
+			curr.next=prev;
+			prev=curr;
+			curr=next;
+		}
+		return prev;
+		
+	}
+	
+	public void prinList(ListNode head) {
+		ListNode temp = head;
+		while(temp!=null) {
+			System.out.print(temp.val + " -> " );
+			temp=temp.next;
+		}
+		System.out.println("null");
+	}
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		ListNode head = new ListNode(1);
+        head.next = new ListNode(2);
+        head.next.next = new ListNode(3);
+
+        Reverse_Linked_List obj = new Reverse_Linked_List();
+        System.out.print("Original List: ");
+        obj.prinList(head);
+
+        ListNode reversed = obj.reverseList(head);
+        System.out.print("Reversed List: ");
+        obj.prinList(reversed);
+
+	}
+
+}
