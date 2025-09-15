@@ -1,0 +1,92 @@
+Given the head of a linked list and a value x, partition it such that all nodes less than x come before nodes greater than or equal to x.
+
+You should preserve the original relative order of the nodes in each of the two partitions.
+
+ 
+
+Example 1:
+
+
+Input: head = [1,4,3,2,5,2], x = 3
+Output: [1,2,2,4,3,5]
+Example 2:
+
+Input: head = [2,1], x = 2
+Output: [1,2]
+ 
+
+Constraints:
+
+The number of nodes in the list is in the range [0, 200].
+-100 <= Node.val <= 100
+-200 <= x <= 200
+
+
+//CODE
+
+package day16;
+
+public class PartitionList {
+	public ListNode partition(ListNode head, int x) {
+        // Dummy heads for before and after lists
+        ListNode beforeHead = new ListNode(-1);
+        ListNode afterHead = new ListNode(-1);
+
+        // Tails to build each list
+        ListNode before = beforeHead;
+        ListNode after = afterHead;
+
+        // Traverse original list
+        while (head != null) {
+            if (head.val < x) {
+                before.next = head;   // attach to before list
+                before = before.next;
+            } else {
+                after.next = head;    // attach to after list
+                after = after.next;
+            }
+            head = head.next;
+        }
+
+        // Important: terminate after list to avoid old links
+        after.next = null;
+
+        // Connect before list to after list
+        before.next = afterHead.next;
+
+        return beforeHead.next; // head of new list
+    }
+
+    // helper to print list
+    public void printList(ListNode head) {
+        ListNode t = head;
+        while (t != null) {
+            System.out.print(t.val);
+            if (t.next != null) System.out.print(" → ");
+            t = t.next;
+        }
+        System.out.println(" → null");
+    }
+
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		 // Build example: 1 → 4 → 3 → 2 → 5 → 2
+        ListNode head = new ListNode(1);
+        head.next = new ListNode(4);
+        head.next.next = new ListNode(3);
+        head.next.next.next = new ListNode(2);
+        head.next.next.next.next = new ListNode(5);
+        head.next.next.next.next.next = new ListNode(2);
+
+        PartitionList sol = new PartitionList();
+        System.out.print("Original: ");
+        sol.printList(head);
+
+        ListNode result = sol.partition(head, 3);
+        System.out.print("Partitioned (x=3): ");
+        sol.printList(result);
+
+	}
+
+}
