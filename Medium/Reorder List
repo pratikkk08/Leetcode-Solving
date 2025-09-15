@@ -1,0 +1,104 @@
+You are given the head of a singly linked-list. The list can be represented as:
+
+L0 → L1 → … → Ln - 1 → Ln
+Reorder the list to be on the following form:
+
+L0 → Ln → L1 → Ln - 1 → L2 → Ln - 2 → …
+You may not modify the values in the list's nodes. Only nodes themselves may be changed.
+
+ 
+
+Example 1:
+
+
+Input: head = [1,2,3,4]
+Output: [1,4,2,3]
+Example 2:
+
+
+Input: head = [1,2,3,4,5]
+Output: [1,5,2,4,3]
+ 
+
+Constraints:
+
+The number of nodes in the list is in the range [1, 5 * 104].
+1 <= Node.val <= 1000 
+
+//CODE
+package day16;
+
+public class ReorderList {
+	 public void reorderList(ListNode head) {
+	        if (head == null || head.next == null) return;
+
+	        // 1) find middle (slow & fast)
+	        ListNode slow = head, fast = head;
+	        while (fast != null && fast.next != null) {
+	            slow = slow.next;
+	            fast = fast.next.next;
+	        }
+	        // Now slow is at middle. For odd length it's the center; for even, slow is start of second half.
+	        // We want to split into [head .. mid] and [midNext .. end]
+	        ListNode second = slow.next;
+	        slow.next = null; // cut first half
+
+	        // 2) reverse second half
+	        ListNode prev = null, curr = second;
+	        while (curr != null) {
+	            ListNode nxt = curr.next;
+	            curr.next = prev;
+	            prev = curr;
+	            curr = nxt;
+	        }
+	        // prev is head of reversed second half
+	        ListNode first = head;
+	        ListNode secondReversed = prev;
+
+	        // 3) merge alternately
+	        while (first != null && secondReversed != null) {
+	            ListNode n1 = first.next;
+	            ListNode n2 = secondReversed.next;
+
+	            first.next = secondReversed;
+	            secondReversed.next = n1;
+
+	            // move pointers
+	            first = n1;
+	            secondReversed = n2;
+	        }
+	        // finished; list is reordered in-place
+	    }
+
+	    // helper to print list (for testing)
+	    public void printList(ListNode head) {
+	        ListNode t = head;
+	        while (t != null) {
+	            System.out.print(t.val);
+	            if (t.next != null) System.out.print(" → ");
+	            t = t.next;
+	        }
+	        System.out.println(" → null");
+	    }
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		// build example 1→2→3→4→5
+        ListNode h = new ListNode(1);
+        h.next = new ListNode(2);
+        h.next.next = new ListNode(3);
+        h.next.next.next = new ListNode(4);
+        h.next.next.next.next = new ListNode(5);
+
+        ReorderList sol = new ReorderList();
+        System.out.print("Original: ");
+        sol.printList(h);
+
+        sol.reorderList(h);
+
+        System.out.print("Reordered: ");
+        sol.printList(h);
+
+	}
+
+}
