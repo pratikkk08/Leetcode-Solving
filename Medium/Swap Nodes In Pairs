@@ -1,0 +1,101 @@
+Given a linked list, swap every two adjacent nodes and return its head. You must solve the problem without modifying the values in the list's nodes (i.e., only nodes themselves may be changed.)
+
+ 
+
+Example 1:
+
+Input: head = [1,2,3,4]
+
+Output: [2,1,4,3]
+
+Explanation:
+
+
+
+Example 2:
+
+Input: head = []
+
+Output: []
+
+Example 3:
+
+Input: head = [1]
+
+Output: [1]
+
+Example 4:
+
+Input: head = [1,2,3]
+
+Output: [2,1,3]
+
+ 
+
+Constraints:
+
+The number of nodes in the list is in the range [0, 100].
+0 <= Node.val <= 100
+
+
+//CODE
+
+package day15;
+class ListNode {
+    int val;
+    ListNode next;
+    ListNode(int val) { this.val = val; this.next = null; }
+}
+public class SwapPairs {
+	public ListNode swapPairs(ListNode head) {
+        // dummy helps handle head swaps smoothly
+        ListNode dummy = new ListNode(-1);
+        dummy.next = head;
+        ListNode prev = dummy; // prev is node before the current pair
+
+        // while there are at least two nodes ahead
+        while (prev.next != null && prev.next.next != null) {
+            ListNode first = prev.next;        // first node of pair
+            ListNode second = first.next;     // second node of pair
+
+            // perform the 3 pointer re-links to swap the pair
+            prev.next = second;               // step 1: prev -> second
+            first.next = second.next;         // step 2: first -> (node after pair)
+            second.next = first;              // step 3: second -> first
+
+            // move prev two nodes forward to the end of swapped pair
+            prev = first;
+        }
+
+        return dummy.next;
+    }
+	
+	public void printList(ListNode head) {
+        ListNode t = head;
+        while (t != null) {
+            System.out.print(t.val);
+            if (t.next != null) System.out.print(" → ");
+            t = t.next;
+        }
+        System.out.println();
+    }
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		  // build list: 1 → 2 → 3 → 4
+        ListNode head = new ListNode(1);
+        head.next = new ListNode(2);
+        head.next.next = new ListNode(3);
+        head.next.next.next = new ListNode(4);
+
+        SwapPairs sol = new SwapPairs();
+        System.out.print("Original: ");
+        sol.printList(head);
+
+        ListNode swapped = sol.swapPairs(head);
+        System.out.print("Swapped : ");
+        sol.printList(swapped);
+
+	}
+
+}
