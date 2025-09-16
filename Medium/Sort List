@@ -1,0 +1,114 @@
+Given the head of a linked list, return the list after sorting it in ascending order.
+
+ 
+
+Example 1:
+
+
+Input: head = [4,2,1,3]
+Output: [1,2,3,4]
+Example 2:
+
+
+Input: head = [-1,5,3,4,0]
+Output: [-1,0,3,4,5]
+Example 3:
+
+Input: head = []
+Output: []
+ 
+
+Constraints:
+
+The number of nodes in the list is in the range [0, 5 * 104].
+-105 <= Node.val <= 105
+ 
+
+Follow up: Can you sort the linked list in O(n logn) time and O(1) memory (i.e. constant space)?
+
+
+//CODE
+
+
+package day17;
+
+public class SortList {
+	public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null) return head; // base case
+
+        // 1) Split list into halves
+        ListNode mid = getMiddle(head);
+        ListNode rightHead = mid.next;
+        mid.next = null; // cut
+
+        // 2) Sort each half
+        ListNode left = sortList(head);
+        ListNode right = sortList(rightHead);
+
+        // 3) Merge two sorted halves
+        return merge(left, right);
+    }
+
+    // Helper: find middle (slow/fast)
+    private ListNode getMiddle(ListNode head) {
+        ListNode slow = head, fast = head;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow; // slow will be middle
+    }
+
+    // Helper: merge two sorted lists
+    private ListNode merge(ListNode l1, ListNode l2) {
+        ListNode dummy = new ListNode(-1);
+        ListNode curr = dummy;
+
+        while (l1 != null && l2 != null) {
+            if (l1.val < l2.val) {
+                curr.next = l1;
+                l1 = l1.next;
+            } else {
+                curr.next = l2;
+                l2 = l2.next;
+            }
+            curr = curr.next;
+        }
+        if (l1 != null) curr.next = l1;
+        if (l2 != null) curr.next = l2;
+
+        return dummy.next;
+    }
+
+    // helper to print
+    public void printList(ListNode head) {
+        ListNode t = head;
+        while (t != null) {
+            System.out.print(t.val);
+            if (t.next != null) System.out.print(" → ");
+            t = t.next;
+        }
+        System.out.println(" → null");
+    }
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		 // build 4 → 2 → 1 → 3
+        ListNode h = new ListNode(4);
+        h.next = new ListNode(2);
+        h.next.next = new ListNode(1);
+        h.next.next.next = new ListNode(3);
+
+        SortList sol = new SortList();
+        System.out.print("Original: ");
+        sol.printList(h);
+
+        ListNode sorted = sol.sortList(h);
+
+        System.out.print("Sorted  : ");
+        sol.printList(sorted);
+    
+
+	}
+
+}
