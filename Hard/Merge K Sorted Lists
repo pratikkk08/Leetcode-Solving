@@ -1,0 +1,110 @@
+You are given an array of k linked-lists lists, each linked-list is sorted in ascending order.
+
+Merge all the linked-lists into one sorted linked-list and return it.
+
+ 
+
+Example 1:
+
+Input: lists = [[1,4,5],[1,3,4],[2,6]]
+Output: [1,1,2,3,4,4,5,6]
+Explanation: The linked-lists are:
+[
+  1->4->5,
+  1->3->4,
+  2->6
+]
+merging them into one sorted linked list:
+1->1->2->3->4->4->5->6
+Example 2:
+
+Input: lists = []
+Output: []
+Example 3:
+
+Input: lists = [[]]
+Output: []
+ 
+
+Constraints:
+
+k == lists.length
+0 <= k <= 104
+0 <= lists[i].length <= 500
+-104 <= lists[i][j] <= 104
+lists[i] is sorted in ascending order.
+The sum of lists[i].length will not exceed 104.
+
+
+//CODE
+
+package day19;
+
+class ListNode {
+    int val;
+    ListNode next;
+    ListNode(int v) { val = v; next = null; }
+}
+public class MergeKSortedLists {
+	// Public API
+    public ListNode mergeKLists(ListNode[] lists) {
+        if (lists == null || lists.length == 0) return null;
+        return mergeRange(lists, 0, lists.length - 1);
+    }
+
+    // Recursively merge the range [l..r]
+    private ListNode mergeRange(ListNode[] lists, int l, int r) {
+        if (l == r) return lists[l];
+        int mid = l + (r - l) / 2;
+        ListNode left = mergeRange(lists, l, mid);
+        ListNode right = mergeRange(lists, mid + 1, r);
+        return mergeTwoLists(left, right);
+    }
+
+    // Merge two sorted lists (standard)
+    private ListNode mergeTwoLists(ListNode a, ListNode b) {
+        ListNode dummy = new ListNode(-1);
+        ListNode tail = dummy;
+        while (a != null && b != null) {
+            if (a.val <= b.val) {
+                tail.next = a;
+                a = a.next;
+            } else {
+                tail.next = b;
+                b = b.next;
+            }
+            tail = tail.next;
+        }
+        tail.next = (a != null) ? a : b;
+        return dummy.next;
+    }
+
+    // Helper to print a list (for testing)
+    public void printList(ListNode head) {
+        ListNode t = head;
+        while (t != null) {
+            System.out.print(t.val + (t.next != null ? " → " : ""));
+            t = t.next;
+        }
+        System.out.println();
+    }
+
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		MergeKSortedLists sol = new MergeKSortedLists();
+
+        // build lists: [1,4,5], [1,3,4], [2,6]
+        ListNode l0 = new ListNode(1); l0.next = new ListNode(4); l0.next.next = new ListNode(5);
+        ListNode l1 = new ListNode(1); l1.next = new ListNode(3); l1.next.next = new ListNode(4);
+        ListNode l2 = new ListNode(2); l2.next = new ListNode(6);
+
+        ListNode[] lists = new ListNode[] { l0, l1, l2 };
+        ListNode merged = sol.mergeKLists(lists);
+
+        System.out.print("Merged: ");
+        sol.printList(merged); // expected 1 → 1 → 2 → 3 → 4 → 4 → 5 → 6
+
+	}
+
+}
